@@ -181,18 +181,25 @@ if _G.charSelectExists then
     --_G.charSelect.character_add_graffiti(CT_MIA_MAILER, get_texture_info("mawio_cs_graffiti"))
 
     init_physbone_chain(E_MODEL_MIA, 0, nil, nil, nil, nil,
-        function(m, rotNode)
-            rotNode.rotation.z = rotNode.rotation.z - degrees_to_sm64(math.clamp(m.forwardVel, -10, 90 - 25))
+        function(rotNode, j)
+            local o = geo_get_current_object()
+            local m = geo_get_mario_state()
+            local isMario = m.marioObj == o
+            local fVel = o.oForwardVel ~= 0 and o.oForwardVel or m.forwardVel
+            rotNode.rotation.z = rotNode.rotation.z - degrees_to_sm64(math.clamp(fVel, -10, 90 - 25))
 
-            rotNode.rotation.x = rotNode.rotation.x + m.marioBodyState.headAngle.z
-            rotNode.rotation.z = rotNode.rotation.z + m.marioBodyState.headAngle.x
+            if isMario then
+                rotNode.rotation.x = rotNode.rotation.x + m.marioBodyState.headAngle.z
+                rotNode.rotation.z = rotNode.rotation.z + m.marioBodyState.headAngle.x
 
-            if m.area.camera.mode == CAMERA_MODE_C_UP then
-                rotNode.rotation.z = rotNode.rotation.z + m.statusForCamera.headRotation.x;
+                if m.area.camera.mode == CAMERA_MODE_C_UP then
+                    rotNode.rotation.z = rotNode.rotation.z + m.statusForCamera.headRotation.x*0.8;
+                end
             end
-            if m.waterLevel > m.pos.y + 120 then
+
+            if find_water_level(o.oPosX, o.oPosZ) > o.oPosY + 120 then
                 
-                rotNode.rotation.z = rotNode.rotation.z + m.marioObj.header.gfx.angle.x - degrees_to_sm64(90)
+                rotNode.rotation.z = rotNode.rotation.z + o.header.gfx.angle.x - degrees_to_sm64(90)
 
                 if sm64_to_degrees(rotNode.rotation.z) > - 35 then
                     rotNode.rotation.z = degrees_to_sm64(-35)
