@@ -549,6 +549,7 @@ hook_event(HOOK_MARIO_UPDATE, function(m)
 end)
 charSelect.character_hook_moveset(CT_MIA_MAILER, HOOK_MARIO_UPDATE, 
     function (m)
+    if m.action == ACT_WALKING then
         if (m.controller.buttonDown & Y_BUTTON ) ~= 0 then
                 if (m.floor ~= nil and m.floor.type == SURFACE_SLOW) then
                     m.forwardVel = m.forwardVel + 0.2 / (m.quicksandDepth + 1)
@@ -556,4 +557,5 @@ charSelect.character_hook_moveset(CT_MIA_MAILER, HOOK_MARIO_UPDATE,
                     m.forwardVel = m.forwardVel + 1.5 / (m.quicksandDepth + 1)
                 end
             end
-        end)
+        end
+    end)
