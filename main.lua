@@ -2,6 +2,7 @@
 -- description: remind me to write description
 
 local E_MODEL_MIA = smlua_model_util_get_id("mia_geo")
+local E_MODEL_SOFIA = smlua_model_util_get_id("sofia_geo")
 local TEX_MIA_ICON = get_texture_info("mia-icon")
 local TEXT_MOD_NAME = "[CS] Mia the Mailwoman"
 
@@ -33,6 +34,11 @@ local MIA_ANIMTABLE = {
     [CHAR_ANIM_STAR_DANCE] = "Mia_StarDance",
     [CHAR_ANIM_RETURN_FROM_STAR_DANCE] = "Mia_ReturnStarDance",
 }
+
+local SOFIA_ANIMTABLE = {
+    [CHAR_ANIM_RUNNING] = "Mia_Run",
+}
+
 
 -- 9 - happy
 -- 10 - squirt
@@ -118,7 +124,8 @@ local MIA_ANIMTABLE_HAND2 = {
 
 local VOICETABLE_MIA = {
 }
-
+local VOICETABLE_SOFIA = {
+}
 local PALETTE_MIA = {
     name = "Classic",
     [PANTS] = "B53121",
@@ -142,6 +149,17 @@ local PALETTE_MIA_MODERN = {
     [EMBLEM] = { r = 255, g = 255, b = 255 },
 }
 
+local PALETTE_SOFIA = {
+    name = "Classic",
+    [PANTS] = "007A8B",
+    [SHIRT] = "9B4C01",
+    [GLOVES] = "007A8B",
+    [HAIR] = "AC7A06",
+    [SHOES] = "007A8B",
+    [SKIN] = "E8BAB1",
+    [CAP] = "007A8B",
+    [EMBLEM] = "007A8B",
+}
 --[[
 
 local HEALTH_MIA = {
@@ -164,15 +182,20 @@ local HEALTH_MIA = {
 if _G.charSelectExists then
     CT_MIA_MAILER = _G.charSelect.character_add("Mia", { "remind me to write a description" }, "Wall_E20",
         "9429BB", E_MODEL_MIA, CT_MARIO, TEX_MIA_ICON, 1.1)
+    CT_SOFIA = _G.charSelect.character_add("Sofia", { "remind me to write a description" }, "Wall_E20",
+        "007A8B", E_MODEL_SOFIA, CT_LUIGI, "S", 1.1)
 
     _G.charSelect.character_add_voice(E_MODEL_MIA, VOICETABLE_MIA)
+    _G.charSelect.character_add_voice(E_MODEL_SOFIA, VOICETABLE_SOFIA)
 
     _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE, MIA_ANIMTABLE_EYES, MIA_ANIMTABLE_HANDS)
+    _G.charSelect.character_add_animations(E_MODEL_SOFIA, nil, MIA_ANIMTABLE_EYES, MIA_ANIMTABLE_HANDS)
 
 
     _G.charSelect.character_add_palette_preset(E_MODEL_MIA, PALETTE_MIA, PALETTE_MIA.name)
     _G.charSelect.character_add_palette_preset(E_MODEL_MIA, PALETTE_MIA_MODERN, PALETTE_MIA_MODERN.name)
 
+    _G.charSelect.character_add_palette_preset(E_MODEL_SOFIA, PALETTE_SOFIA, PALETTE_SOFIA.name)
 
     --_G.charSelect.character_add_celebration_star(E_MODEL_MIA, E_MODEL_MIA, TEX)
 
@@ -429,7 +452,8 @@ end
 -- 5 = :<
 -- 6 = Underwater/Struggle
 -- 7 = Waaahh
-function mia_mouth_func(node, matStackIndex)
+
+local function mia_sofia_update_mouth_func(node, char)
     local m = geo_get_mario_state()
     local s = gPlayerSyncTable[m.playerIndex]
     local asSwitchNode = cast_graph_node(node)
@@ -457,36 +481,62 @@ function mia_mouth_func(node, matStackIndex)
             mouth_id = special_expressions.mouth
         end
     end
-
-    if smluaanim == "Mia_RunFast" then
-        mouth_id = MIA_MOUTH_HAPPY
+    if char == "mia" then
+        if smluaanim == "Mia_RunFast" then
+            mouth_id = MIA_MOUTH_HAPPY
+        end
     end
     
     asSwitchNode.selectedCase = mouth_id
 end
-function mia_extra_switch_func(node, matStackIndex)
+
+function mia_mouth_func(node, matStackIndex)
+    mia_sofia_update_mouth_func(node, "mia")
+end
+function sofia_mouth_func(node, matStackIndex)
+    mia_sofia_update_mouth_func(node, "sofia")
+end
+
+local function mia_sofia_update_extra_switch_func(node, char)
     local m = geo_get_mario_state()
     local special_expressions = special_expressions(m)
     local bodystate = geo_get_body_state()
     local asSwitchNode = cast_graph_node(node)
 
     if cast_graph_node(node).parameter == 0 then
-        if m.waterLevel > m.pos.y + 70 then
-            asSwitchNode.selectedCase = 1
-        else
-            asSwitchNode.selectedCase = 0
+        if char == "mia" then
+            if m.waterLevel > m.pos.y + 70 then
+                asSwitchNode.selectedCase = 1
+            else
+                asSwitchNode.selectedCase = 0
+            end
         end
     elseif cast_graph_node(node).parameter == 1 then
-        if MIA_ANIMTABLE_HAND2[m.marioObj.header.gfx.animInfo.animID] ~= nil then
-            asSwitchNode.selectedCase = MIA_ANIMTABLE_HAND2[m.marioObj.header.gfx.animInfo.animID]
-        else
-            asSwitchNode.selectedCase = MIA_HAND_DEFAULT
-        end
-        if special_expressions then
-            if special_expressions.hand2 then
-                asSwitchNode.selectedCase = special_expressions.hand2
+        if char == "mia" then
+            if MIA_ANIMTABLE_HAND2[m.marioObj.header.gfx.animInfo.animID] ~= nil then
+                asSwitchNode.selectedCase = MIA_ANIMTABLE_HAND2[m.marioObj.header.gfx.animInfo.animID]
             else
                 asSwitchNode.selectedCase = MIA_HAND_DEFAULT
+            end
+            if special_expressions then
+                if special_expressions.hand2 then
+                    asSwitchNode.selectedCase = special_expressions.hand2
+                else
+                    asSwitchNode.selectedCase = MIA_HAND_DEFAULT
+                end
+            end
+        elseif char == "sofia" then
+            if MIA_ANIMTABLE_HAND2[m.marioObj.header.gfx.animInfo.animID] ~= nil then
+                asSwitchNode.selectedCase = MIA_ANIMTABLE_HAND2[m.marioObj.header.gfx.animInfo.animID]
+            else
+                asSwitchNode.selectedCase = MIA_HAND_DEFAULT
+            end
+            if special_expressions then
+                if special_expressions.hand2 then
+                    asSwitchNode.selectedCase = special_expressions.hand2
+                else
+                    asSwitchNode.selectedCase = MIA_HAND_DEFAULT
+                end
             end
         end
     elseif cast_graph_node(node).parameter == 2 then
@@ -507,6 +557,13 @@ function mia_extra_switch_func(node, matStackIndex)
             end
         end
     end
+end
+
+function mia_extra_switch_func(node, matStackIndex)
+    mia_sofia_update_extra_switch_func(node, "mia")
+end
+function sofia_extra_switch_func(node, matStackIndex)
+    mia_sofia_update_extra_switch_func(node, "sofia")
 end
 
 hook_event(HOOK_MARIO_UPDATE, function(m)
@@ -547,8 +604,8 @@ hook_event(HOOK_MARIO_UPDATE, function(m)
         end
     end
 end)
-charSelect.character_hook_moveset(CT_MIA_MAILER, HOOK_MARIO_UPDATE, 
-    function (m)
+
+local function mia_sofia_moveset_update(m)
     if m.action == ACT_WALKING then
         if (m.controller.buttonDown & Y_BUTTON ) ~= 0 then
                 if (m.floor ~= nil and m.floor.type == SURFACE_SLOW) then
@@ -558,4 +615,6 @@ charSelect.character_hook_moveset(CT_MIA_MAILER, HOOK_MARIO_UPDATE,
                 end
             end
         end
-    end)
+    end
+charSelect.character_hook_moveset(CT_MIA_MAILER, HOOK_MARIO_UPDATE, mia_sofia_moveset_update)
+charSelect.character_hook_moveset(CT_SOFIA, HOOK_MARIO_UPDATE, mia_sofia_moveset_update)
