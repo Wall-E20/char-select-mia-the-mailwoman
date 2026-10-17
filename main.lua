@@ -307,23 +307,24 @@ local MIA_ANIMTABLE_EYES_SELECTION = {
 
 
 local function select_menu_anim(m)
+    local smluaanim = smlua_anim_util_get_current_animation_name(m.marioObj)
+    if charSelect.character_get_current_number(m.playerIndex) == CT_MIA_MAILER then
+        if m.playerIndex ~= 0 then return end
 
-local smluaanim = smlua_anim_util_get_current_animation_name(m.marioObj)
-
-if m.playerIndex ~= 0 then return end
-
-    if charSelect.is_menu_open() == true then
-        if (charSelect.controller.buttonPressed & A_BUTTON) ~= 0 then
-            _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE_SELECTION, MIA_ANIMTABLE_EYES_SELECTION)
-            if smluaanim ~= "Mia_MenuSelect" then
-                set_anim_to_frame(m, 0)
+        if charSelect.is_menu_open() == true then
+            if (charSelect.controller.buttonPressed & A_BUTTON) ~= 0 then
+                _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE_SELECTION, MIA_ANIMTABLE_EYES_SELECTION)
+                if smluaanim ~= "Mia_MenuSelect" then
+                    set_anim_to_frame(m, 0)
+                end
             end
-        end
-        if smluaanim == "Mia_MenuSelect" and is_anim_at_end(m) ~= 0 then
+            if smluaanim == "Mia_MenuSelect" and is_anim_at_end(m) ~= 0 then
+                _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE, MIA_ANIMTABLE_EYES,
+                    MIA_ANIMTABLE_HANDS)
+            end
+        else
             _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE, MIA_ANIMTABLE_EYES, MIA_ANIMTABLE_HANDS)
         end
-    else
-        _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE, MIA_ANIMTABLE_EYES, MIA_ANIMTABLE_HANDS)
     end
 end
 hook_event(HOOK_MARIO_UPDATE, select_menu_anim)
