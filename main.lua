@@ -328,6 +328,12 @@ local function select_menu_anim(m)
     end
 end
 hook_event(HOOK_MARIO_UPDATE, select_menu_anim)
+_G.charSelect.hook_on_character_change(
+function(curchar, prevchar) 
+if curchar ~= CT_MIA_MAILER then 
+_G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE, MIA_ANIMTABLE_EYES, MIA_ANIMTABLE_HANDS)
+end
+end)
 
 
 local MIA_ANIMTABLE_MOUTH = {
