@@ -247,10 +247,10 @@ if _G.charSelectExists then
 
     _G.charSelect.character_add_palette_preset(E_MODEL_SOFIA, PALETTE_SOFIA, PALETTE_SOFIA.name)
 
-    _G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_YELLOW_COIN, E_MODEL_MAIL_NORMAL, true)
-    _G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_YELLOW_COIN_NO_SHADOW, E_MODEL_MAIL_NORMAL_NO_SHADOW, true)
-    _G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_RED_COIN, E_MODEL_MAIL_LOVE, true)
-    _G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_RED_COIN_NO_SHADOW, E_MODEL_MAIL_LOVE_NO_SHADOW, true)
+    --_G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_YELLOW_COIN, E_MODEL_MAIL_NORMAL, true)
+    --_G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_YELLOW_COIN_NO_SHADOW, E_MODEL_MAIL_NORMAL_NO_SHADOW, true)
+    --_G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_RED_COIN, E_MODEL_MAIL_LOVE, true)
+    --_G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_RED_COIN_NO_SHADOW, E_MODEL_MAIL_LOVE_NO_SHADOW, true)
     --_G.charSelect.character_add_celebration_star(E_MODEL_MIA, E_MODEL_MIA, TEX)
 
     --_G.charSelect.character_add_costume_health_meter(CT_MIA_MAILER, 1, HEALTH_MAWIO_W20)
