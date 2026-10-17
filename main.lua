@@ -123,6 +123,50 @@ local MIA_ANIMTABLE_HAND2 = {
 
 
 local VOICETABLE_MIA = {
+    [CHAR_SOUND_YAH_WAH_HOO] = {"ha_jump.ogg", "hee_jump.ogg", "hmp_jump.ogg","hu_jump.ogg","ya_jump.ogg","hah.ogg"},
+    [CHAR_SOUND_HOOHOO] = "ya.ogg",
+    [CHAR_SOUND_YAHOO] = "yippiee.ogg",
+    [CHAR_SOUND_UH] = "ee_confused.ogg",
+    [CHAR_SOUND_HRMM] = "rrhm.ogg",
+    [CHAR_SOUND_WAH2] = "there.ogg",
+    [CHAR_SOUND_WHOA] = "ha_attack.ogg",
+    [CHAR_SOUND_EEUH] = "hhm.ogg",
+    [CHAR_SOUND_ATTACKED] = {"uhg_damage.ogg", "ouch3_damage.ogg", "yieks_damage.ogg", "ah_damage.ogg"},
+    [CHAR_SOUND_OOOF] = {"oof.ogg", "guh_damage.ogg"},
+    [CHAR_SOUND_OOOF2] = {"oof.ogg","guh_damage.ogg"},
+    [CHAR_SOUND_HERE_WE_GO] = {"cleared.ogg", "herewego2.ogg", "easypeasy.ogg"},
+    --[CHAR_SOUND_YAWNING] = "",
+    --[CHAR_SOUND_SNORING1] = "",
+    --[CHAR_SOUND_SNORING2] = "",
+    [CHAR_SOUND_WAAAOOOW] = "waaa.ogg",
+    [CHAR_SOUND_HAHA] = {"nice.ogg","tada.ogg","yay.ogg","yay2.ogg"},
+    [CHAR_SOUND_HAHA_2] = "yay2.ogg",
+    [CHAR_SOUND_UH2] = "rrhm.ogg",
+    --[CHAR_SOUND_UH2_2] = "",
+    [CHAR_SOUND_ON_FIRE] = {"eek.ogg", "eek2.ogg","eehh_damage.ogg"},
+    [CHAR_SOUND_DYING] = "aww.ogg",
+    [CHAR_SOUND_PANTING_COLD] = "painting.ogg",
+    [CHAR_SOUND_PANTING] = "painting.ogg",
+    [CHAR_SOUND_COUGHING1] = "painting.ogg",
+    --[CHAR_SOUND_COUGHING2] = "",
+    --[CHAR_SOUND_COUGHING3] = "",
+    [CHAR_SOUND_PUNCH_YAH] = {"ha_attack.ogg","hah_attack.ogg"},
+    [CHAR_SOUND_PUNCH_HOO] = {"here_attack.ogg","kaa_attack.ogg","yaa_attack.ogg"},
+    [CHAR_SOUND_PUNCH_WAH] = "yaa2_attack.ogg",
+    [CHAR_SOUND_MAMA_MIA] = {"huh_finishedalready.ogg","whatwastheobjective.ogg"},
+    [CHAR_SOUND_GROUND_POUND_WAH] = "hah.ogg",
+    --[CHAR_SOUND_DROWNING] = "",
+    [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = {"yippiee.ogg", "herewego.ogg","letgo2.ogg"},
+    [CHAR_SOUND_DOH] = "ee_confused.ogg",
+    [CHAR_SOUND_GAME_OVER] = "illrestforabit.ogg",
+    [CHAR_SOUND_HELLO] = "yes3.ogg",
+    --[CHAR_SOUND_PRESS_START_TO_PLAY] = "",
+    [CHAR_SOUND_TWIRL_BOUNCE] = "yay2.ogg",
+    --[CHAR_SOUND_SNORING3] = "",
+    [CHAR_SOUND_SO_LONGA_BOWSER] = "goodbye.ogg",
+    [CHAR_SOUND_IMA_TIRED] = "illrestforabit.ogg",
+    [CHAR_SOUND_LETS_A_GO] = {"thisshouldbeaneasyquest.ogg","hereigo.ogg","hereicome.ogg","letsgo.ogg","leaveittome.ogg"},
+    [CHAR_SOUND_OKEY_DOKEY] = "yay.ogg",
 }
 local VOICETABLE_SOFIA = {
 }
@@ -239,6 +283,13 @@ if _G.charSelectExists then
     hook_event(HOOK_MARIO_UPDATE, function(m)
         if _G.charSelect.character_get_voice(m) == VOICETABLE_MIA then return _G.charSelect.voice.snore(m) end
     end)
+    hook_event(HOOK_CHARACTER_SOUND, function(m, sound)
+        if _G.charSelect.character_get_voice(m) == VOICETABLE_SOFIA then return _G.charSelect.voice.sound(m, sound) end
+    end)
+
+    hook_event(HOOK_MARIO_UPDATE, function(m)
+        if _G.charSelect.character_get_voice(m) == VOICETABLE_SOFIA then return _G.charSelect.voice.snore(m) end
+    end)
 else
     djui_popup_create(
         "\\#ffffdc\\\n" ..
@@ -247,10 +298,33 @@ else
         6)
 end
 
+local MIA_ANIMTABLE_SELECTION = {
+    [_G.charSelect.CS_ANIM_MENU] = "Mia_MenuSelect",
+}
+local MIA_ANIMTABLE_EYES_SELECTION = {
+    [_G.charSelect.CS_ANIM_MENU] = MARIO_EYES_LOOK_RIGHT,
+}
 
-for i = 0, MAX_PLAYERS - 1 do
-    gPlayerSyncTable[i].mia_mouth = 0
+
+local function select_menu_anim(m)
+
+local smluaanim = smlua_anim_util_get_current_animation_name(m.marioObj)
+
+if m.playerIndex ~= 0 then return end
+
+    if charSelect.is_menu_open() == true then
+        if (charSelect.controller.buttonPressed & A_BUTTON) ~= 0 then
+            _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE_SELECTION, MIA_ANIMTABLE_EYES_SELECTION)
+            set_anim_to_frame(m, 0)
+        end
+        if smluaanim == "Mia_MenuSelect" and is_anim_at_end(m) ~= 0 then
+            _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE, MIA_ANIMTABLE_EYES, MIA_ANIMTABLE_HANDS)
+        end
+    else
+        _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE, MIA_ANIMTABLE_EYES, MIA_ANIMTABLE_HANDS)
+    end
 end
+hook_event(HOOK_MARIO_UPDATE, select_menu_anim)
 
 
 local MIA_ANIMTABLE_MOUTH = {
@@ -445,6 +519,15 @@ local function special_expressions(m)
             return { mouth = MIA_MOUTH_HAPPY, eyes = 10, hand2 = MIA_HAND_DEFAULT}
         else
             return { mouth = MIA_MOUTH_NORMAL, eyes = MARIO_EYES_CLOSED, hand2 = MIA_HAND_DEFAULT }
+        end
+    elseif (smluaanim == "Mia_MenuSelect") then
+        obj_skip_interpolation(m.marioObj)
+        if animframe <= 7 then
+            return { mouth = MIA_MOUTH_NORMAL, eyes = MARIO_EYES_CLOSED, hands = MARIO_HAND_FISTS, hand2 = MIA_HAND_DEFAULT }
+        elseif animframe > 7 and animframe <= 25 then
+            return { mouth = MIA_MOUTH_HAPPY, hands = MARIO_HAND_FISTS, hand2 = MIA_HAND_PACE }
+        else
+            return { mouth = MIA_MOUTH_NORMAL, hand2 = MIA_HAND_DEFAULT }
         end
     else
         return
