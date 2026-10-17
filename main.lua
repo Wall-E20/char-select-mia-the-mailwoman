@@ -4,6 +4,12 @@
 local E_MODEL_MIA = smlua_model_util_get_id("mia_geo")
 local E_MODEL_SOFIA = smlua_model_util_get_id("sofia_geo")
 local TEX_MIA_ICON = get_texture_info("mia-icon")
+
+E_MODEL_MAIL_NORMAL = smlua_model_util_get_id("mail_normal_geo")
+E_MODEL_MAIL_NORMAL_NO_SHADOW = smlua_model_util_get_id("mail_normal_no_shadow_geo")
+E_MODEL_MAIL_LOVE = smlua_model_util_get_id("mail_love_geo")
+E_MODEL_MAIL_LOVE_NO_SHADOW = smlua_model_util_get_id("mail_love_no_shadow_geo")
+
 local TEXT_MOD_NAME = "[CS] Mia the Mailwoman"
 
 local MIA_MOUTH_NORMAL = 0
@@ -241,6 +247,10 @@ if _G.charSelectExists then
 
     _G.charSelect.character_add_palette_preset(E_MODEL_SOFIA, PALETTE_SOFIA, PALETTE_SOFIA.name)
 
+    _G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_YELLOW_COIN, E_MODEL_MAIL_NORMAL, true)
+    _G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_YELLOW_COIN_NO_SHADOW, E_MODEL_MAIL_NORMAL_NO_SHADOW, true)
+    _G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_RED_COIN, E_MODEL_MAIL_LOVE, true)
+    _G.charSelect.character_add_model_replacement(CT_MIA_MAILER, E_MODEL_RED_COIN_NO_SHADOW, E_MODEL_MAIL_LOVE_NO_SHADOW, true)
     --_G.charSelect.character_add_celebration_star(E_MODEL_MIA, E_MODEL_MIA, TEX)
 
     --_G.charSelect.character_add_costume_health_meter(CT_MIA_MAILER, 1, HEALTH_MAWIO_W20)
@@ -328,13 +338,23 @@ local function select_menu_anim(m)
     end
 end
 hook_event(HOOK_MARIO_UPDATE, select_menu_anim)
-_G.charSelect.hook_on_character_change(
-    function(curchar, prevchar)
-        if curchar ~= CT_MIA_MAILER then
-            _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE, MIA_ANIMTABLE_EYES, MIA_ANIMTABLE_HANDS)
-        end
-    end)
 
+_G.charSelect.hook_on_character_change(
+function(curchar, prevchar)
+    if curchar ~= CT_MIA_MAILER then
+        _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE, MIA_ANIMTABLE_EYES, MIA_ANIMTABLE_HANDS)
+    end
+end)
+
+local function mia_interactions(m, obj, inttype)
+    if charSelect.character_get_current_number(m.playerIndex) == CT_MIA_MAILER then
+        if get_id_from_behavior(obj.behavior) == id_bhvRedCoin then
+            play_character_sound(m, CHAR_SOUND_HAHA)
+        end
+    end
+end
+
+hook_event(HOOK_ON_INTERACT, mia_interactions)
 
 local MIA_ANIMTABLE_MOUTH = {
 
