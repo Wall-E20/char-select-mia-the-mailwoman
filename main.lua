@@ -315,7 +315,9 @@ if m.playerIndex ~= 0 then return end
     if charSelect.is_menu_open() == true then
         if (charSelect.controller.buttonPressed & A_BUTTON) ~= 0 then
             _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE_SELECTION, MIA_ANIMTABLE_EYES_SELECTION)
-            set_anim_to_frame(m, 0)
+            if smluaanim ~= "Mia_MenuSelect" then
+                set_anim_to_frame(m, 0)
+            end
         end
         if smluaanim == "Mia_MenuSelect" and is_anim_at_end(m) ~= 0 then
             _G.charSelect.character_add_animations(E_MODEL_MIA, MIA_ANIMTABLE, MIA_ANIMTABLE_EYES, MIA_ANIMTABLE_HANDS)
@@ -521,7 +523,6 @@ local function special_expressions(m)
             return { mouth = MIA_MOUTH_NORMAL, eyes = MARIO_EYES_CLOSED, hand2 = MIA_HAND_DEFAULT }
         end
     elseif (smluaanim == "Mia_MenuSelect") then
-        obj_skip_interpolation(m.marioObj)
         if animframe <= 7 then
             return { mouth = MIA_MOUTH_NORMAL, eyes = MARIO_EYES_CLOSED, hands = MARIO_HAND_FISTS, hand2 = MIA_HAND_DEFAULT }
         elseif animframe > 7 and animframe <= 25 then
